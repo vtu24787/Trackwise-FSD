@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Smart Campus Event System</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    h1 { color: #2c3e50; }
+    .box { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    input, button { padding: 8px; margin: 5px; }
+    button { cursor: pointer; }
+  </style>
+</head>
+<body>
+
+<h1>🎓 Smart Campus Event System</h1>
+
+<h2>➕ Add Event (Admin)</h2>
+<input id="title" placeholder="Event Title">
+<input id="date" type="date">
+<button onclick="addEvent()">Add Event</button>
+
+<hr>
+
+<h2>📅 Events</h2>
+<div id="events"></div>
+
+<script>
+let events = JSON.parse(localStorage.getItem("events")) || [];
+let registrations = JSON.parse(localStorage.getItem("registrations")) || [];
+
+function saveData() {
+  localStorage.setItem("events", JSON.stringify(events));
+  localStorage.setItem("registrations", JSON.stringify(registrations));
+}
+
+function addEvent() {
+  const title = document.getElementById("title").value;
+  const date = document.getElementById("date").value;
+
+  if (!title || !date) {
+    alert("Enter all fields");
+    return;
+  }
+
+  events.push({
+    id: Date.now(),
+    title,
+    date
+  });
+
+  saveData();
+  alert("Event Added!");
+  loadEvents();
+}
+
+function loadEvents() {
+  const container = document.getElementById("events");
+  container.innerHTML = "";
+
+  events.forEach(e => {
+    const div = document.createElement("div");
+    div.className = "box";
+
+    div.innerHTML = `
+      <h3>${e.title}</h3>
+      <p>Date: ${e.date}</p>
+      <input placeholder="Your Name" id="name-${e.id}">
+      <button onclick="register(${e.id})">Register</button>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function register(id) {
+  const name = document.getElementById("name-" + id).value;
+
+  if (!name) {
+    alert("Enter your name");
+    return;
+  }
+
+  registrations.push({ eventId: id, name });
+  saveData();
+
+  alert("Registered successfully!");
+}
+
+loadEvents();
+</script>
+
+</body>
+</html>
